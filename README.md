@@ -1,15 +1,15 @@
 # Stand-Alone Windows Hardening (SAWH)
-SAWH is a PowerShell script to reduce the attack surface of Windows systems that are not attached to a Windows Active Directory Domain and do not require Windows services to function. Human-Machine Interface (MHI) systems within process environments often only require local access to interact with the system. These systems typically do not need to use services such as Network Browsing, IPv6, SMBv1, NetBIOS, and other Windows services to function properly. Therefore, to reduce the attack surface, many of these services can be disabled. This script provides a configurable way to modify the configuration of a stand-alone system without the need to configure, test, and install Security Templates. Security Templates and Group Policy Objects (GPO), of course, are the BEST way to handle system hardening and SAWH should only be used as a stop-gap until your team can plan and test those technologies.
+SAWH is a PowerShell script to reduce the attack surface of Windows systems that are not attached to a Windows Active Directory Domain and do not require Windows services to function. Human-Machine Interface (MHI) systems within process environments often only require local access to interact with the system. These systems typically do not need to use services such as Network Browsing, IPv6, SMBv1, NetBIOS, and other Windows services to function properly. Therefore, to reduce the attack surface, many of these services can be disabled. This script provides a configurable way to modify the configuration of a stand-alone system without the need to configure, test, and install Security Templates. [Security Templates and Group Policy Objects (GPO)](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-compliance-toolkit-10), of course, are the BEST way to handle system hardening and SAWH should only be used as a stop-gap until your team can plan and test those technologies.
 
 # WARNING
 
-*** Use At Your Own Risk!!!! Do not run on production systems without testing. ***
+** Use At Your Own Risk!!!! Do not run on production systems without testing. **
 
 Do not run on production systems without testing.
 
 Use at your own risk. Cutaway Security is not responsible for how this script affects your system, your network, your services, or your process. Users accept all responsibility for using this script in testing and production enviornments.
 
-*** Use At Your Own Risk!!!! Do not run on production systems without testing. ***
+** Use At Your Own Risk!!!! Do not run on production systems without testing. **
 
 # Capabilities
 SAWH provides three running modes.
@@ -39,10 +39,10 @@ Set-ExecutionPolicy Bypass -Scope Process
 ```
 * Follow the prompts
 * Test your system's functionality. Rollback if necessary.
-* Tell us about your experience on Twitter by tagging @cutawaysecurity
+* Tell us about your experience on Twitter by tagging [@cutawaysecurity](https://twitter.com/cutawaysecurity)
 
 
 # Acknowledgements
 The following people and teams have assisted with the testing and / or direction of this project. CutSec sincerely appreciates their input and support.
 
-* Tom Liston (@tliston) - Bad Wolf Security, LLC
+* Tom Liston [@tliston](https://twitter.com/tliston) - Bad Wolf Security, LLC
