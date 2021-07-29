@@ -1,0 +1,16 @@
+# OSX General
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# VIM Swap Files
+*.swp
+
+# Output files
+*.csv
+*.xml
+*.txt
+*.rtf
+*.xlsx
+*.json
