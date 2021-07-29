@@ -3,13 +3,13 @@ SAWH is a PowerShell script to reduce the attack surface of Windows systems that
 
 # WARNING
 
-** Use At Your Own Risk!!!! Do not run on production systems without testing. **
+**Use At Your Own Risk!!!! Do not run on production systems without testing.**
 
 Do not run on production systems without testing.
 
 Use at your own risk. Cutaway Security is not responsible for how this script affects your system, your network, your services, or your process. Users accept all responsibility for using this script in testing and production enviornments.
 
-** Use At Your Own Risk!!!! Do not run on production systems without testing. **
+**Use At Your Own Risk!!!! Do not run on production systems without testing.**
 
 # Capabilities
 SAWH provides three running modes.
