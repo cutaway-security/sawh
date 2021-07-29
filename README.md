@@ -39,8 +39,11 @@ Set-ExecutionPolicy Bypass -Scope Process
 ```
 * Follow the prompts
 * Test your system's functionality. Rollback if necessary.
-* Tell us about your experience on Twitter by tagging [@cutawaysecurity](https://twitter.com/cutawaysecurity)
+* Tell us about your experience on Twitter by tagging [@cutawaysecurity](https://twitter.com/cutawaysecurity). Be sure to include your Windows version.
 
+# Systems Tested
+## Windows Versions
+* Windows 10.0.17763
 
 # Acknowledgements
 The following people and teams have assisted with the testing and / or direction of this project. CutSec sincerely appreciates their input and support.

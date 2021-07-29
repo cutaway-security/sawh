@@ -35,6 +35,7 @@
 #>
 
 $script_name = 'sawh.ps1'
+$sysversion  = (Get-CimInstance Win32_OperatingSystem).version
 $warning     = '
 
 ###################################################################################
@@ -111,6 +112,7 @@ if ($check) {
 	# Start Check 
 	####################
 	Write-Host '[*] Checking Windows Services'
+	Write-Host "[*] Running on Windows version: $sysversion"
 	
 	####################
 	# Check network interface modes
@@ -178,6 +180,7 @@ if ($disable) {
 	# Start Disabling 
 	####################
 	Write-Host '[*] Disabling Windows Services'
+	Write-Host "[*] Running on Windows version: $sysversion"
 
 	####################
 	# Put all interfaces into 'Public' mode
@@ -268,6 +271,7 @@ if ($enable) {
 	# Start Enabling 
 	####################
 	Write-Host '[*] Enabling Windows Services. Be careful, you might be better restoring from backup / snapshot.'
+	Write-Host "[*] Running on Windows version: $sysversion"
 
 	####################
 	# Put all interfaces into 'Private' mode
