@@ -12,11 +12,28 @@ Use at your own risk. Cutaway Security is not responsible for how this script af
 ***Use At Your Own Risk!!!! Do not run on production systems without testing.***
 
 # Capabilities
+## Running Modes
 SAWH provides three running modes.
 
 * 'check' - this performs a check of the system and the configuration of the script's actions.
 * 'disable' - this modifies the system to disable services and settings following the action verbs configured in the script.
 * 'enable' - this modifies the system to enable services and settings following the action verbs configured in the script.
+
+## Configurations
+The following configurations can be updated within the script. Your team should review each and determine which should be enabled and which should be disabled. Then, they should test completely before using in production.
+
+* Interface Mode: modifies the mode of each network interface. Disabling puts the interfaces into 'Public' mode. Enabling puts the interfaces into 'Private' mode.
+* NetBIOS: modifies the settings of each network interface. Disabling disables NetBIOS on each interface. Enabling enables NetBIOS on each interface.
+* Firewall Rules: modifies the Windows Host-based Firewall with a rule named "Block Windows Services - SAWH" that controls TCP ports 135,137,139,445. Enabling creates the rule (if not present) and enables the rule. Disabling does not remove the rule, it just disables it.
+* Bindings: Network interfaces have multiple configuration settings that can be controlled. The bindings setting controls the function of all. Each setting has its own setting.
+ * IPv6: This setting controls the use of IPv6 on all interfaces. Disabling will disable IPv6 on all interfaces. Enabling will enable IPv6 on all interfaces.
+ * LLTP: This setting controls the use of Link-Layer Topology Discovery Mapper I/O Driver and the Microsoft LLDP Driver on all interfaces. Disabling will disable LLTP on all interfaces. Enabling will enable LLTP on all interfaces.
+ * Client: This setting controls the use of Client for Microsoft Networks and File and Printer Sharing for Microsoft Networks on all interfaces. Disabling will disable these services on all interfaces. Enabling will enable these services on all interfaces.
+ * NAMP: This setting controls the use of Microsoft Network Adapter Multiplexor Protocol on all interfaces. Disabling will disable NAMP on all interfaces. Enabling will enable NAMP on all interfaces.
+ * RDP: This setting controls the use of Terminal Services (RDP) on the system. Disabling will disable the RDP service in registry and also create a firewall rule name "Block RDP - SAWH" that blocks TCP 3389. Enabling will enable the RDP service in registry and also disable the "Block RDP - SAWH" firewall without removing it.
+  * This is the only rule that is disabled by default. This is because many organizations will require RDP to access these stand-alone systems. Update with care and testing.
+* SMBv1: This setting controls the use of SMBv1. Disabling will disable SMBv1 on the system. ***Enabling does nothing.*** You don't need SMBv1 for a stand-alone system. Don't enable it. Fire your vendor or integrator if they force you to enable it. If you really need it, you'll figure out how to enable it.
+ * Seriously, you don't need SMBv1. Disabling it is extremely important.
 
 ## Considerations
 Check is safe. It makes no changes and there is a seperate confirmation prompt when changes will be made to the system.

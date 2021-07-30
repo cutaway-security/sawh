@@ -58,12 +58,13 @@ WARNING: Use at your own risk. Cutaway Security is not responsible for
 $inf_mode = $true
 $netbios  = $true
 $fw_rules = $true
-$smbv1    = $true
 $bindings = $true
 $ipv6     = $true
 $lltp     = $true
 $client   = $true
 $namp     = $true
+$rdp      = $false   # Disabled by default because this may be required
+$smbv1    = $true
 
 ####################
 # Action verbs, user input changes these
@@ -145,6 +146,19 @@ if ($check) {
 	Write-Host "[*] Modifying Network Adapter LLTP Bindings is set to: $lltp"
 	Write-Host "[*] Modifying Network Adapter Client / Server Bindings is set to: $client"
 	Write-Host "[*] Modifying Network Adapter Multiplexor Binding is set to: $namp"
+
+	####################
+	# Check RDP
+	####################
+	Write-Host '[*] Checking RDP'
+	if ((Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections").fDenyTSConnections){
+		Write-Host '[*] RDP is Disabled'
+	}else{
+		Write-Host '[*] RDP is Enabled'
+	}
+	Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections"
+	Get-NetFirewallRule -DisplayName "Block RDP - SAWH" -ErrorAction SilentlyContinue
+	Write-Host "[*] Modifying Terminal Services (RDP) is set to: $rdp"
 
 	####################
 	# Check SMBv1
@@ -246,6 +260,28 @@ if ($disable) {
 	}
 
 	####################
+	# Disable RDP
+	####################
+	if ($rdp){
+		Write-Host '[*] Checking RDP'
+		Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections"
+		if ((Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections").fDenyTSConnections){
+			Write-Host '[*] RDP was already Disabled'
+		}else{
+			Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 1
+			Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections"
+		}
+		Write-Host '[*] Block RDP - SAWH using Windows Firewall'
+		$d = Get-NetFirewallRule -DisplayName "Block RDP - SAWH" -ErrorAction SilentlyContinue
+		if ($d){
+			Set-NetFirewallRule -DisplayName "Block RDP - SAWH" -Enabled True
+		}else{
+			New-NetFirewallRule -DisplayName "Block RDP - SAWH" -Direction Inbound -LocalPort 3389 -Protocol TCP -Action Block
+		}
+		Get-NetFirewallRule -DisplayName "Block RDP - SAWH" -ErrorAction SilentlyContinue
+	}
+
+	####################
 	# Disable SMBv1 - This should be last because of reboot prompt
 	####################
 	if ($smbv1){
@@ -298,7 +334,7 @@ if ($enable) {
 	####################
 	if ($fw_rules){
 		Write-Host '[*] Enabling Block Windows Services - SAWH using Windows Firewall'
-		Set-NetFirewallRule -DisplayName "Block Windows Services - SAWH" -Enabled True -ErrorAction SilentlyContinue
+		Set-NetFirewallRule -DisplayName "Block Windows Services - SAWH" -Enabled False -ErrorAction SilentlyContinue
 		Get-NetFirewallRule -DisplayName "Block Windows Services - SAWH" -ErrorAction SilentlyContinue
 	}
 
@@ -329,6 +365,24 @@ if ($enable) {
 			Enable-NetAdapterBinding –InterfaceAlias * –ComponentID ms_implat 
 		}
 		Get-NetAdapterBinding -InterfaceAlias *
+	}
+
+	####################
+	# Enable RDP
+	####################
+	if ($rdp){
+		Write-Host '[*] Checking RDP'
+		Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections"
+		if ((Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections").fDenyTSConnections){
+			Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
+			Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections"
+			Write-Host '[*] RDP was already Disabled'
+		}else{
+			Write-Host '[*] RDP was already Enabled'
+		}
+		Write-Host '[*] Enabling RDP - SAWH using Windows Firewall'
+		Set-NetFirewallRule -DisplayName "Block RDP - SAWH" -Enabled False -ErrorAction SilentlyContinue
+		Get-NetFirewallRule -DisplayName "Block RDP - SAWH" -ErrorAction SilentlyContinue
 	}
 
 	####################
