@@ -50,13 +50,14 @@ Disable and Enable use a brute force update to all system interfaces. Modificati
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process
 ```
-* Execute the script and follow the prompts
+* Execute the script.
 ```powershell
 .\sawh.ps1
 ```
-* Follow the prompts
+* Follow the prompts.
+* Reboot your system.
 * Test your system's functionality. Rollback if necessary.
-* Tell us about your experience on Twitter by tagging [@cutawaysecurity](https://twitter.com/cutawaysecurity). Be sure to include your Windows version.
+* Tell us about your experience on Twitter by tagging [@cutawaysecurity](https://twitter.com/cutawaysecurity) or, preferably, in this Github repo so others can help. Be sure to include your Windows version.
 
 # Systems Tested
 ## Windows Versions
