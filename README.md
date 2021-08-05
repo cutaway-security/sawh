@@ -5,7 +5,7 @@ SAWH is a PowerShell script to reduce the attack surface of Windows systems that
 
 ***Use At Your Own Risk!!!! Do not run on production systems without testing.***
 
-Use at your own risk. Cutaway Security is not responsible for how this script affects your system, your network, your services, or your process. Users accept all responsibility for using this script in testing and production enviornments.
+Use at your own risk. Cutaway Security is not responsible for how this script affects your system, your network, your services, or your process. Users accept all responsibility for using this script in testing and production environments.
 
 ***Use At Your Own Risk!!!! Do not run on production systems without testing.***
 
@@ -34,7 +34,7 @@ The following configurations can be updated within the script. Your team should 
   * Seriously, you don't need SMBv1. Disabling it is extremely important.
 
 ## Considerations
-Check is safe. It makes no changes and there is a seperate confirmation prompt when changes will be made to the system.
+Check is safe. It makes no changes and there is a separate confirmation prompt when changes will be made to the system.
 Disable and Enable use a brute force update to all system interfaces. Modifications are made to all interfaces.
 
 # Usage
