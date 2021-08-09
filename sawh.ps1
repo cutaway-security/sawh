@@ -56,7 +56,7 @@ WARNING: Use at your own risk. Cutaway Security is not responsible for
 ###################################################################################
 
 '
-$start_state = $true           # Enable / disable writing the system's state before beginning
+$start_state     = $true       # Enable / disable writing the system's state before beginning
 $completed_state = $true       # Enable / disable writing the system's state after changes
 
 # Global Configuration verbs, modify these to disable modifications
@@ -72,9 +72,9 @@ $rdp      = $false   # Disabled by default because this may be required
 $smbv1    = $true
 
 # Global Action verbs, user input changes these
-$disable = $false
-$enable  = $false
-$check   = $false
+$disable  = $false
+$rollback = $false
+$check    = $false
 
 
 ####################
@@ -504,25 +504,27 @@ function Set-SMBv1State(){
 ####################
 
 
-# Set whether to enable or disable Windows services
+# Print program beginning message
 ####################
 function Write-ProgStart {
 	Write-Host "$warning"
+	Write-Host "[*] Started Date/Time: $(get-date -format yyyyMMddTHHmmssffzz)"
 	Write-Host "[*] $script_name is about to start. Run the following Nmap scan (from a seperate system) and check current statue before proceeding:"
 	Write-Host '[*] sudo nmap -sT -p 135,137,139,445,3389 <IP Address>'
 }
 ####################
 
-# Completed
+# Print program completed message
 ####################
 function Write-ProgComplete {
+	Write-Host "[*] Completed Date/Time: $(get-date -format yyyyMMddTHHmmssffzz)"
 	Write-Host "[*] $script_name has completed. Run the following Nmap scan (from a seperate system) and check the results:"
 	Write-Host '[*] sudo nmap -sT -p 135,137,139,445,3389 <IP Address>'
 	Write-Host '[*] Do not forget to reboot before testing.'
 }
 ####################
 
-# Check for Configuration
+# Print configuration information
 ####################
 function Write-SAWHConfig {
 	Write-Host ""
@@ -544,7 +546,7 @@ function Write-SAWHConfig {
 }
 ####################
 
-# Check System State
+# Print System State
 ####################
 function Write-SystemState {
 	Get-InterfaceModeState
@@ -567,14 +569,14 @@ Write-ProgStart
 ####################
 $action = Read-Host "Do you want to check, disable, or rollback Windows services? [check/disable/rollback]"
 # Set user input.
+if ($action -eq 'check') {
+    $check = $true
+}
 if ($action -eq 'disable') {
     $disable = $true
 }
 if ($action -eq 'rollback') {
     $rollback = $true
-}
-if ($action -eq 'check') {
-    $check = $true
 }
 # Check user input. Fail if it isn't exactly what we expected
 if ($rollback -eq $false -And $disable -eq $false -And $check -eq $false){

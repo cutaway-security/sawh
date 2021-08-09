@@ -15,14 +15,14 @@ SAWH provides three running modes.
 
 * 'check' - this performs a check of the system and the configuration of the script's actions.
 * 'disable' - this modifies the system to disable services and settings following the action verbs configured in the script.
-* 'enable' - this modifies the system to enable services and settings following the action verbs configured in the script.
+* 'rollback' - this modifies the system to rollback services and settings following the action verbs configured in the script. The rollback is not performed from a stored configuration for the system. The rollback resets the system to a normal default configuration by enabling the Windows services and network adapter settings. NOTE: except for SMBv1, you can roll this setting back manually.
 
 ## Configurations
 The following configurations can be updated within the script. Your team should review each and determine which should be enabled and which should be disabled. Then, they should test completely before using in production.
 
 * <ins>Interface Mode</ins>: modifies the mode of each network interface. Disabling puts the interfaces into 'Public' mode. Enabling puts the interfaces into 'Private' mode.
 * <ins>NetBIOS</ins>: modifies the settings of each network interface. Disabling disables NetBIOS on each interface. Enabling enables NetBIOS on each interface.
-* <ins>Firewall Rules</ins>: modifies the Windows Host-based Firewall with a rule named "Block Windows Services - SAWH" that controls TCP ports 135,137,139,445. Enabling creates the rule (if not present) and enables the rule. Disabling does not remove the rule, it just disables it.
+* <ins>Firewall Rules</ins>: modifies the Windows Host-based Firewall with a rule named "Block Windows Services - SAWH" that controls TCP ports 135, 137, 139, and 445. Enabling creates the rule (if not present) and enables the rule. Disabling does not remove the rule, it just disables it.
 * <ins>Bindings</ins>: Network interfaces have multiple configuration settings that can be controlled. The bindings setting controls the function of all. Each setting has its own setting.
   * <ins>IPv6</ins>: This setting controls the use of IPv6 on all interfaces. Disabling will disable IPv6 on all interfaces. Enabling will enable IPv6 on all interfaces.
   * <ins>LLTP</ins>: This setting controls the use of Link-Layer Topology Discovery Mapper I/O Driver and the Microsoft LLDP Driver on all interfaces. Disabling will disable LLTP on all interfaces. Enabling will enable LLTP on all interfaces.
@@ -67,3 +67,14 @@ Set-ExecutionPolicy Bypass -Scope Process
 The following people and teams have assisted with the testing and / or direction of this project. CutSec sincerely appreciates their input and support.
 
 * Tom Liston [@tliston](https://twitter.com/tliston) - Bad Wolf Security, LLC
+
+# TODO
+
+* Log output to a local file as well as stdout.
+* Firewall rule to block UDP-based Windows service ports.
+* Disable other unnecessary Windows services.
+* Test user accounts and alert when there are no users that are not members of the Administrators group.
+* Determine if you can update system configuration to ensure new interfaces start with these settings?
+* Disable remote WMI and remote PowerShell.
+* Disable non-Administrators from starting CMD.exe and each version of PowerShell [using hash rules or path rules](https://docs.microsoft.com/en-us/windows-server/identity/software-restriction-policies/work-with-software-restriction-policies-rules).
+* Add startup/login/shutdown script to check and log configurations.
