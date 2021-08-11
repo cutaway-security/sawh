@@ -59,14 +59,19 @@ Set-ExecutionPolicy Bypass -Scope Process
 
 # Systems Tested
 ## Windows Versions
-* Windows 10.0.17763
+* Windows 10 Enterprise
+  * 10.0.17763
+* Windows 2016 Server
+  * 10.0.14393
 ## HMI / Software Solutions Tested
-* Have you tested one successfully? Let us know.
+Have you tested one successfully? Let us know.
+* [BITS BACnet Site Auditor](https://www.bac-test.com/bacnet-site-auditor-download/) 
 
 # Acknowledgements
 The following people and teams have assisted with the testing and / or direction of this project. CutSec sincerely appreciates their input and support.
 
 * Tom Liston [@tliston](https://twitter.com/tliston) - Bad Wolf Security, LLC
+* Ken Lassey, Cornell University
 
 # TODO
 
