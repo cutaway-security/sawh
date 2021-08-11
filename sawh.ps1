@@ -509,6 +509,7 @@ function Set-SMBv1State(){
 function Write-ProgStart {
 	Write-Host "$warning"
 	Write-Host "[*] Started Date/Time: $(get-date -format yyyyMMddTHHmmssffzz)"
+	Write-Host "[*] Running on Windows: $sysversion"
 	Write-Host "[*] $script_name is about to start. Run the following Nmap scan (from a seperate system) and check current statue before proceeding:"
 	Write-Host '[*] sudo nmap -sT -p 135,137,139,445,3389 <IP Address>'
 }
@@ -531,6 +532,7 @@ function Write-SAWHConfig {
 	Write-Host "################################"
 	Write-Host "[*] SAWH Configuration Settings"
 	Write-Host "################################"
+	Write-Host "[*] Running on Windows: $sysversion"
 	Write-Host "[*] Modifying network interface mode is set to: $inf_mode"
 	Write-Host "[*] Modifying NetBIOS is set to: $netbios"
 	Write-Host "[*] Modifying Firewall Rules is set to: $fw_rules"
