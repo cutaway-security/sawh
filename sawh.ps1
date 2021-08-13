@@ -603,6 +603,7 @@ if ($start_state) { Write-SystemState }
 ####################
 if ($disable){
 	# Get user confirmation before proceeding
+	Write-Host "[*] SAWH Disable Function"
 	Get-UserConfirmation
 
 	Set-InterfaceModeState
@@ -613,18 +614,19 @@ if ($disable){
 	Set-SMBv1State
 }
 
-# Run enable function
+# Run rollback function
 ####################
-if ($enable){
+if ($rollback){
 	# Get user confirmation before proceeding
+	Write-Host "[*] SAWH Rollback Function"
 	Get-UserConfirmation
 
-	Set-InterfaceModeState -Enabled $true
-	Set-NetBIOSState -Enabled $true
-	Set-SAWHFWRulesState -Enabled $true
-	Set-NetBindingsState -Enabled $true
-	Set-TerminalServicesState -Enabled $true
-	Set-SMBv1State -Enabled $true
+	Set-InterfaceModeState -Enable $true
+	Set-NetBIOSState -Enable $true
+	Set-SAWHFWRulesState -Enable $true
+	Set-NetBindingsState -Enable $true
+	Set-TerminalServicesState -Enable $true
+	Set-SMBv1State -Enable $true
 
 }
 
