@@ -310,23 +310,23 @@ function Set-NetBindingsState(){
 			(Get-NetAdapter -Physical | Where-Object {$_.Name -NotLike '*Loopback*' -And $_.Status -eq 'Up'}).InterfaceAlias | ForEach-Object -Process {
 				if ($ipv6) {
 					# Disable IPv6
-					Disable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_tcpip6			 
+					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_tcpip6			 
 				}
 				if ($lltp) {  
 					# Disable Link-Layer Topology Discovery Mapper I/O Driver
-					Disable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_lltdio 
+					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_lltdio 
 					# Disable Microsoft LLDP protocol Driver
-					Disable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_lldp 
+					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_lldp 
 				}
 				if ($client) { 
 					# Disable Client for Microsoft Networks
-					Disable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_msclient 
+					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_msclient 
 					# Disable File and Printer Sharing for Microsoft Networks
-					Disable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_server 
+					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_server 
 				}
 				if ($namp) { 
 					# Disable Microsoft Network Adapter Multiplexor Protocol
-					Disable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_implat 
+					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_implat 
 				}
 			}
 		}else{
@@ -334,23 +334,23 @@ function Set-NetBindingsState(){
 			(Get-NetAdapter -Physical | Where-Object {$_.Name -NotLike '*Loopback*' -And $_.Status -eq 'Up'}).InterfaceAlias | ForEach-Object -Process {
 				if ($ipv6) {
 					# Disable IPv6
-					Enable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_tcpip6			 
+					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_tcpip6			 
 				}
 				if ($lltp) {  
 					# Disable Link-Layer Topology Discovery Mapper I/O Driver
-					Enable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_lltdio 
+					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_lltdio 
 					# Disable Microsoft LLDP protocol Driver
-					Enable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_lldp 
+					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_lldp 
 				}
 				if ($client) { 
 					# Disable Client for Microsoft Networks
-					Enable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_msclient 
+					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_msclient 
 					# Disable File and Printer Sharing for Microsoft Networks
-					Enable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_server 
+					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_server 
 				}
 				if ($namp) { 
 					# Disable Microsoft Network Adapter Multiplexor Protocol
-					Enable-NetAdapterBinding –InterfaceAlias $_ –ComponentID ms_implat 
+					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_implat 
 				}
 			}
 		}
