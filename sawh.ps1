@@ -14,6 +14,7 @@
 
 	Acknowledgements:
 		Tom Liston (@tliston) - Bad Wolf Security, LLC
+		Ken Lassey, Cornell University
 #>
 
 <#
@@ -39,9 +40,10 @@
 ####################
 
 # Common Configuration Parameters
-$script_name = 'sawh.ps1'
-$sysversion  = (Get-CimInstance Win32_OperatingSystem).version
-$warning     = '
+$script_name  = 'sawh.ps1'
+$sysversion   = (Get-CimInstance Win32_OperatingSystem).version
+$show_warning = $true
+$warning      = '
 
 ###################################################################################
 *** Use At Your Own Risk!!!! Do not run on production systems without testing. ***
@@ -69,6 +71,7 @@ $lltp     = $true
 $client   = $true
 $namp     = $true
 $rdp      = $false   # Disabled by default because this may be required
+$smb_hard = $true
 $smbv1    = $true
 
 # Global Action verbs, user input changes these
@@ -100,7 +103,7 @@ function Get-AdminState {
 # Confirm System Modifications
 ####################
 function Get-UserConfirmation {
-	Write-Host '*** Use At Your Own Risk!!!! Do not run on production systems without testing. ***'
+	if ($show_warning){	Write-Host '*** Use At Your Own Risk!!!! Do not run on production systems without testing. ***' }
 	$confirmation = Read-Host "Are you Sure You Want To Proceed? [n/y]"
 	if ($confirmation -ne 'y') {
 		Write-Host "[*] User selected to exit. Exiting..."
@@ -455,6 +458,45 @@ function Set-TerminalServicesState(){
 }
 ####################
 
+# Service Message Bus (SMB) Hardening
+####################
+function Get-SMBConfigState(){
+
+	####################
+	# Check SMB Configuration
+	####################
+	Write-Host '[*] Checking SMB Configuration'
+	Write-Host "[*] SMB configuration is currently: "
+	Get-SmbServerConfiguration
+	
+	# Let's give a little whitespace for readability
+	Write-Host ''
+}
+
+function Set-SMBConfigState(){
+	
+	Param(
+		# Enable means to change the setting to the default / insecure state.
+		$Enable = $false
+	)
+
+	####################
+	# Disable SMBv1 - This should be last because of reboot prompt
+	####################
+	if ($smb_hard){
+		if (-NOT $Enable) { 
+			Write-Host '[*] Hardening SMB configuration settings.'
+			Set-SmbServerConfiguration -AutoShareServer $false -AutoShareWorkstation $false -RequireSecuritySignature $true -EnableSecuritySignature $true -EncryptData $true -Confirm:$false
+		}else{
+			Write-Host '[*] Setting SMB service back to standard default configuration.'
+			Set-SmbServerConfiguration -AutoShareServer $true -AutoShareWorkstation $true -RequireSecuritySignature $false -EnableSecuritySignature $false -EncryptData $false -Confirm:$false
+		}
+	}
+	
+	# Let's give a little whitespace for readability
+	Write-Host ''
+}
+
 # Service Message Bus version 1 (SMBv1)
 ####################
 function Get-SMBv1State(){
@@ -507,7 +549,7 @@ function Set-SMBv1State(){
 # Print program beginning message
 ####################
 function Write-ProgStart {
-	Write-Host "$warning"
+	if ($show_warning){	Write-Host "$warning" }
 	Write-Host "[*] Started Date/Time: $(get-date -format yyyyMMddTHHmmssffzz)"
 	Write-Host "[*] Running on Windows: $sysversion"
 	Write-Host "[*] $script_name is about to start. Run the following Nmap scan (from a seperate system) and check current statue before proceeding:"
@@ -542,6 +584,7 @@ function Write-SAWHConfig {
 	Write-Host "    [*] Modifying Network Adapter Client / Server Bindings is set to: $client"
 	Write-Host "    [*] Modifying Network Adapter Multiplexor Binding is set to: $namp"
 	Write-Host "[*] Modifying Terminal Services (RDP) is set to: $rdp"
+	Write-Host "[*] Modifying SMB Configuration is set to: $smb_hard"
 	Write-Host "[*] Modifying SMBv1 is set to: $smbv1"
 	Write-Host "################################"
 	Write-Host ""
@@ -556,6 +599,7 @@ function Write-SystemState {
 	Get-SAWHFWRulesState
 	Get-NetBindingsState
 	Get-TerminalServicesState
+	Get-SMBConfigState
 	Get-SMBv1State
 }
 ####################
@@ -611,6 +655,7 @@ if ($disable){
 	Set-SAWHFWRulesState
 	Set-NetBindingsState
 	Set-TerminalServicesState
+	Set-SMBConfigState
 	Set-SMBv1State
 }
 
@@ -626,6 +671,7 @@ if ($rollback){
 	Set-SAWHFWRulesState -Enable $true
 	Set-NetBindingsState -Enable $true
 	Set-TerminalServicesState -Enable $true
+	Set-SMBConfigState -Enable $true 
 	Set-SMBv1State -Enable $true
 
 }

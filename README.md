@@ -20,29 +20,33 @@ SAWH provides three running modes.
 ## Configurations
 The following configurations can be updated within the script. Your team should review each and determine which should be enabled and which should be disabled. Then, they should test completely before using in production.
 
-* <ins>Interface Mode</ins>: modifies the mode of each network interface. Disabling puts the interfaces into 'Public' mode. Enabling puts the interfaces into 'Private' mode.
-* <ins>NetBIOS</ins>: modifies the settings of each network interface. Disabling disables NetBIOS on each interface. Enabling enables NetBIOS on each interface.
-* <ins>Firewall Rules</ins>: modifies the Windows Host-based Firewall with a rule named "Block Windows Services - SAWH" that controls TCP ports 135, 137, 139, and 445. Enabling creates the rule (if not present) and enables the rule. Disabling does not remove the rule, it just disables it.
+* <ins>Interface Mode</ins>: modifies the mode of each network interface. Disabling puts the interfaces into 'Public' mode. Rolling back puts the interfaces into 'Private' mode.
+* <ins>NetBIOS</ins>: modifies the settings of each network interface. Disabling disables NetBIOS on each interface. Rolling back enables NetBIOS on each interface.
+* <ins>Firewall Rules</ins>: modifies the Windows Host-based Firewall with a rule named "Block Windows Services - SAWH" that controls TCP ports 135, 137, 139, and 445. Enabling creates the rule (if not present) and enables the rule. Rolling back does not remove the rule, it just disables it.
 * <ins>Bindings</ins>: Network interfaces have multiple configuration settings that can be controlled. The bindings setting controls the function of all. Each setting has its own setting.
-  * <ins>IPv6</ins>: This setting controls the use of IPv6 on all interfaces. Disabling will disable IPv6 on all interfaces. Enabling will enable IPv6 on all interfaces.
-  * <ins>LLTP</ins>: This setting controls the use of Link-Layer Topology Discovery Mapper I/O Driver and the Microsoft LLDP Driver on all interfaces. Disabling will disable LLTP on all interfaces. Enabling will enable LLTP on all interfaces.
-  * <ins>Client</ins>: This setting controls the use of Client for Microsoft Networks and File and Printer Sharing for Microsoft Networks on all interfaces. Disabling will disable these services on all interfaces. Enabling will enable these services on all interfaces.
-  * <ins>NAMP</ins>: This setting controls the use of Microsoft Network Adapter Multiplexor Protocol on all interfaces. Disabling will disable NAMP on all interfaces. Enabling will enable NAMP on all interfaces.
-* <ins>RDP</ins>: This setting controls the use of Terminal Services (RDP) on the system. Disabling will disable the RDP service in registry and also create a firewall rule name "Block RDP - SAWH" that blocks TCP 3389. Enabling will enable the RDP service in registry and also disable the "Block RDP - SAWH" firewall without removing it.
+  * <ins>IPv6</ins>: This setting controls the use of IPv6 on all interfaces. Disabling will disable IPv6 on all interfaces. Rolling back will enable IPv6 on all interfaces.
+  * <ins>LLTP</ins>: This setting controls the use of Link-Layer Topology Discovery Mapper I/O Driver and the Microsoft LLDP Driver on all interfaces. Disabling will disable LLTP on all interfaces. Rolling back will enable LLTP on all interfaces.
+  * <ins>Client</ins>: This setting controls the use of Client for Microsoft Networks and File and Printer Sharing for Microsoft Networks on all interfaces. Disabling will disable these services on all interfaces. Rolling back will enable these services on all interfaces.
+  * <ins>NAMP</ins>: This setting controls the use of Microsoft Network Adapter Multiplexor Protocol on all interfaces. Disabling will disable NAMP on all interfaces. Rolling back will enable NAMP on all interfaces.
+* <ins>RDP</ins>: This setting controls the use of Terminal Services (RDP) on the system. Disabling will disable the RDP service in registry and also create a firewall rule name "Block RDP - SAWH" that blocks TCP 3389. Rolling back will enable the RDP service in registry and also disable the "Block RDP - SAWH" firewall without removing it.
   * This is the only rule that is disabled by default. This is because many organizations will require RDP to access these stand-alone systems. Update with care and testing.
-* <ins>SMBv1</ins>: This setting controls the use of SMBv1. Disabling will disable SMBv1 on the system. ***Enabling does nothing.*** You don't need SMBv1 for a stand-alone system. Don't enable it. Fire your vendor or integrator if they force you to enable it. If you really need it, you'll figure out how to enable it.
+* <ins>SMB Configuration</ins>: This setting controls the configuration settings for SMB. Disabling will turn off SMB server and Workstation shares and will turn on and require SMB signing and encryption. Rolling back will reset the system to normal SMB default configuration which is to turn on SMB server and Workstation shares and disable SMB signing and encryption.
+* <ins>SMBv1</ins>: This setting controls the use of SMBv1. Disabling will disable SMBv1 on the system. ***Rolling back does nothing.*** You don't need SMBv1 for a stand-alone system. Don't enable it. Fire your vendor or integrator if they force you to enable it. If you really need it, you'll figure out how to enable it.
   * Seriously, you don't need SMBv1. Disabling it is extremely important.
 
 ## Considerations
 Check is safe. It makes no changes and there is a separate confirmation prompt when changes will be made to the system.
-Disable and Enable use a brute force update to all system interfaces. Modifications are made to all interfaces.
+Rolling back puts the system's state into an insecure default state. This script does not maintain the system's original configuration. You should run and store the check action in case you need to reconfigure the system to match the original state.
 
 # Usage
-* Prepare for rollback by backing up or snapshotting the system completely.
+Tell us about your experience on Twitter by tagging [@cutawaysecurity](https://twitter.com/cutawaysecurity) or, preferably, in this Github repo so others can help. Be sure to include your Windows version.
+
+## Deploying via removable media
+* Prepare for rollback by backing up or taking a virtual snapshot of the system.
 * Download 'sawh.ps1' from this repository.
 * Modify any of the configurations verbs to change modifications to your desired configuration.
-* Copy the 'sawh.ps1' to your downloads directory
-* Start a PowerShell Terminal as Administrator. This is required.
+* Copy the 'sawh.ps1' to a trusted removable media and place the file on the target system in the user's Downloads directory.
+* Start a PowerShell Terminal as Administrator. **This is required.**
 * Change to your downloads directory.
 * Allow scripts to run within the scope of this PowerShell process.
 ```powershell
@@ -55,16 +59,42 @@ Set-ExecutionPolicy Bypass -Scope Process
 * Follow the prompts.
 * Reboot your system.
 * Test your system's functionality. Rollback if necessary.
-* Tell us about your experience on Twitter by tagging [@cutawaysecurity](https://twitter.com/cutawaysecurity) or, preferably, in this Github repo so others can help. Be sure to include your Windows version.
+
+## Deploying via web server
+* Prepare for rollback by backing up or taking a virtual snapshot of the system.
+* Download 'sawh.ps1' from this repository.
+* Modify any of the configurations verbs to change modifications to your desired configuration.
+* Start a webserver on your system using Python.
+```python
+python3 -m http.server 8181
+```
+* Start a PowerShell Terminal on the target system as Administrator. **This is required.**
+* Change to the user's downloads directory.
+* Download the SAWH PowerShell script from the Python webserver.
+```powershell
+(New-Object Net.WebClient).DownloadString('http://<webserver>:8181/chaps/chaps.ps1') >.\sawh.ps1
+```
+* Allow scripts to run within the scope of this PowerShell process.
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process
+```
+* Execute the script.
+```powershell
+.\sawh.ps1
+```
+* Follow the prompts.
+* Reboot your system.
+* Test your system's functionality. Rollback if necessary.
 
 # Systems Tested
+Have you tested one successfully? Let us know.
+
 ## Windows Versions
 * Windows 10 Enterprise
   * 10.0.17763
 * Windows 2016 Server
   * 10.0.14393
 ## HMI / Software Solutions Tested
-Have you tested one successfully? Let us know.
 * [BITS BACnet Site Auditor](https://www.bac-test.com/bacnet-site-auditor-download/) 
 
 # Acknowledgements
