@@ -62,7 +62,7 @@ $start_state     = $true       # Enable / disable writing the system's state bef
 $completed_state = $true       # Enable / disable writing the system's state after changes
 
 # Global Configuration verbs, modify these to disable modifications
-$inf_private_mode = $true # Network interfaces mode - true: Public' mode, false: 'Private' mode
+$inf_private_mode = $true # Network interfaces mode - true: 'Private' mode, false: 'Public' mode
 $disable_netbios  = $true # Disable NetBIOS for all network interfaces
 $fw_rules         = $true # Apply SAWH firewall rules
 $inf_bindings     = $true # Change configuration of network interfaces 
@@ -290,7 +290,7 @@ function Set-SAWHFWRulesState(){
 
 # Interface inf_bindings
 ####################
-function Get-Netinf_bindingsState(){
+function Get-NetInfBindingsState(){
 	####################
 	# Check Network Adapter inf_bindings
 	####################
@@ -301,7 +301,7 @@ function Get-Netinf_bindingsState(){
 	Write-Host ''
 }
 
-function Set-Netinf_bindingsState(){
+function Set-NetInfBindingsState(){
 	
 	Param(
 		# Enable means to change the setting to the default / insecure state.
@@ -679,7 +679,7 @@ function Write-SystemState {
 	Get-InterfaceModeState
 	Get-NetBIOSState
 	Get-SAWHFWRulesState
-	Get-Netinf_bindingsState
+	Get-NetInfBindingsState
 	Get-TerminalServicesState
 	Get-SMBConfigState
 	Get-SMBv1State
@@ -736,7 +736,7 @@ if ($disable){
 	Set-InterfaceModeState
 	Set-NetBIOSState
 	Set-SAWHFWRulesState
-	Set-Netinf_bindingsState
+	Set-NetInfBindingsState
 	Set-TerminalServicesState
 	Set-SMBConfigState
 	Set-SMBv1State
@@ -753,7 +753,7 @@ if ($rollback){
 	Set-InterfaceModeState -Enable $true
 	Set-NetBIOSState -Enable $true
 	Set-SAWHFWRulesState -Enable $true
-	Set-Netinf_bindingsState -Enable $true
+	Set-NetInfBindingsState -Enable $true
 	Set-TerminalServicesState -Enable $true
 	Set-SMBConfigState -Enable $true 
 	Set-SMBv1State -Enable $true
