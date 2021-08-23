@@ -546,14 +546,14 @@ function Set-SMBv1State(){
 
 # Default Windows apps
 ####################
-function Get-InstalledWindowsApps(){
+function Get-DefaultWindowsApps(){
 	Write-Host '[*] Getting list of installed Windows apps'
     Get-AppxPackage | Format-Table Name
     # Uncomment to get list of apps that will be installed for future users
 	#Get-AppxProvisionedPackage -Online | Format-Table DisplayName, PackageName
 }
 
-function Set-InstalledWindowsApps(){
+function Set-DefaultWindowsApps(){
 	Param(
 		# Enable means to change the setting to the default / insecure state.
 		$Enable = $false
@@ -683,7 +683,7 @@ function Write-SystemState {
 	Get-TerminalServicesState
 	Get-SMBConfigState
 	Get-SMBv1State
-	Get-InstalledWindowsApps
+	Get-DefaultWindowsApps
 }
 ####################
 
@@ -740,7 +740,7 @@ if ($disable){
 	Set-TerminalServicesState
 	Set-SMBConfigState
 	Set-SMBv1State
-	Set-InstalledWindowsApps
+	Set-DefaultWindowsApps
 }
 
 # Run rollback function
@@ -757,7 +757,7 @@ if ($rollback){
 	Set-TerminalServicesState -Enable $true
 	Set-SMBConfigState -Enable $true 
 	Set-SMBv1State -Enable $true
-	Set-InstalledWindowsApps -Enable $true
+	Set-DefaultWindowsApps -Enable $true
 
 }
 
