@@ -73,6 +73,7 @@ $inf_bindings     = $true # Change configuration of network interfaces
 $disable_rdp      = $false   # Disable rdp and block it on firewall. Not used by default because this may be required by some organizations
 $harden_smb = $true # Change configuration of SMB to more secure
 $disable_smbv1    = $true # Disable SMBv1, rolling back does nothing
+$uninstall_windows_apps = $true # Uninstall default Windows apps not needed for ICS
 
 # Global Action verbs, user input changes these
 $disable  = $false
@@ -542,6 +543,86 @@ function Set-SMBv1State(){
 }
 
 ####################
+
+# Default Windows apps
+####################
+function Get-InstalledWindowsApps(){
+	Write-Host '[*] Getting list of installed Windows apps'
+    Get-AppxPackage | Format-Table Name
+    # Uncomment to get list of apps that will be installed for future users
+	#Get-AppxProvisionedPackage -Online | Format-Table DisplayName, PackageName
+}
+
+function Set-InstalledWindowsApps(){
+	Param(
+		# Enable means to change the setting to the default / insecure state.
+		$Enable = $false
+	)
+
+    #List of default windows apps to uninstall
+    $default_windows_apps = (
+        "Microsoft.BingWeather",
+        "Microsoft.BingNews",
+        "Microsoft.BingFinance",
+        "Microsoft.BingSports",
+        "Microsoft.BingTranslator",
+        "Microsoft.Print3D",
+        "Microsoft.3DBuilder",
+        "Microsoft.Microsoft3DViewer",
+        "Microsoft.DesktopAppInstaller",
+        "Microsoft.GetHelp",
+        "Microsoft.Getstarted",
+        "Microsoft.Messaging",
+        "Microsoft.MicrosoftOfficeHub",
+        "Microsoft.MicrosoftSolitaireCollection",
+        "Microsoft.MixedReality.Portal",
+        "Microsoft.OneConnect",
+        "Microsoft.People",
+        "Microsoft.SkypeApp",
+        "Microsoft.StorePurchaseApp",
+        "Microsoft.Wallet",
+        "Microsoft.WindowsMaps",
+        "Microsoft.WindowsStore",
+        "Microsoft.Xbox.TCUI",
+        "Microsoft.XboxApp",
+        "Microsoft.XboxGameOverlay",
+        "Microsoft.XboxGamingOverlay",
+        "Microsoft.XboxIdentityProvider",
+        "Microsoft.XboxSpeechToTextOverlay",
+        "Microsoft.YourPhone",
+        "Microsoft.ZuneMusic",
+        "Microsoft.ZuneVideo",
+        "Microsoft.Whiteboard",
+        "Microsoft.WindowsSoundRecorder",
+        "microsoft.windowscommunicationsapps",
+        "Microsoft.RemoteDesktop", #this doesn't block rdp, its just modern Windows app
+        "Microsoft.NetworkSpeedTest",
+        "Microsoft.Office.Sway"
+    )
+
+    if ($uninstall_windows_apps){
+		if (-NOT $Enable) { 
+			Write-Host '[*] Uninstalling selected default Windows apps for all current users.'
+			foreach($app in $default_windows_apps){
+				Write-host "Uninstalling $app"
+				Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage 
+				# Uncomment to remove it completely, makes it impossible to install
+				#Get-AppxProvisionedPackage -Online | Where-Object {$_.DisplayName -eq $app} | Remove-AppxProvisionedPackage -Online 
+				Write-Host '[*] Selected default Windows apps uninstalled.'
+			}
+		}
+		else{
+			Write-Host '[*] Installing selected default Windows apps.'
+			foreach($app in $default_windows_apps){
+				Write-host "Installing $app"
+				Get-AppxPackage -AllUsers $app | ForEach-Object {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+				Write-Host '[*] Selected default Windows apps installed - shortcuts need to be restored manually.' 
+			}
+    	}
+    }
+}
+
+####################
 # Print Functions
 ####################
 
@@ -586,6 +667,7 @@ function Write-SAWHConfig {
 	Write-Host "[*] Modifying Terminal Services (RDP) is set to: $disable_rdp"
 	Write-Host "[*] Modifying SMB Configuration is set to: $harden_smb"
 	Write-Host "[*] Modifying SMBv1 is set to: $disable_smbv1"
+	Write-Host "[*] Uninstalling default Windows Apps is set to: $uninstall_windows_apps"
 	Write-Host "################################"
 	Write-Host ""
 }
@@ -601,6 +683,7 @@ function Write-SystemState {
 	Get-TerminalServicesState
 	Get-SMBConfigState
 	Get-SMBv1State
+	Get-InstalledWindowsApps
 }
 ####################
 
@@ -657,6 +740,7 @@ if ($disable){
 	Set-TerminalServicesState
 	Set-SMBConfigState
 	Set-SMBv1State
+	Set-InstalledWindowsApps
 }
 
 # Run rollback function
@@ -673,6 +757,7 @@ if ($rollback){
 	Set-TerminalServicesState -Enable $true
 	Set-SMBConfigState -Enable $true 
 	Set-SMBv1State -Enable $true
+	Set-InstalledWindowsApps -Enable $true
 
 }
 
