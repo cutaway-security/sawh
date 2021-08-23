@@ -62,17 +62,17 @@ $start_state     = $true       # Enable / disable writing the system's state bef
 $completed_state = $true       # Enable / disable writing the system's state after changes
 
 # Global Configuration verbs, modify these to disable modifications
-$inf_mode = $true
-$netbios  = $true
-$fw_rules = $true
-$bindings = $true
-$ipv6     = $true
-$lltp     = $true
-$client   = $true
-$namp     = $true
-$rdp      = $false   # Disabled by default because this may be required
-$smb_hard = $true
-$smbv1    = $true
+$inf_private_mode = $true # Network interfaces mode - true: Public' mode, false: 'Private' mode
+$disable_netbios  = $true # Disable NetBIOS for all network interfaces
+$fw_rules         = $true # Apply SAWH firewall rules
+$inf_bindings     = $true # Change configuration of network interfaces 
+	$inf_bindings_ipv6     = $true # Disable IPv6 on all interfaces
+	$inf_bindings_lltp     = $true # Disable LLTP on all interfaces
+	$inf_bindings_client   = $true # Disable Client for Microsoft Networks and File and Printer Sharing for Microsoft Networks on all interfaces
+	$inf_bindings_namp     = $true # Disable NAMP on all interfaces
+$disable_rdp      = $false   # Disable rdp and block it on firewall. Not used by default because this may be required by some organizations
+$harden_smb = $true # Change configuration of SMB to more secure
+$disable_smbv1    = $true # Disable SMBv1, rolling back does nothing
 
 # Global Action verbs, user input changes these
 $disable  = $false
@@ -135,7 +135,7 @@ function Set-InterfaceModeState {
 		$Enable = $false
 	)
 
-	if ($inf_mode){
+	if ($inf_private_mode){
 		# Check the physical interfaces, avoid loopbacks, and only act on interfaces that are up
 		# NOTE: this will not change anything with intefaces with the status 'Disconnected'
 		if (-NOT $Enable) {
@@ -181,7 +181,7 @@ function Set-NetBIOSState(){
 		$Enable = $false
 	)
 	
-	if ($netbios){
+	if ($disable_netbios){
 		if (-NOT $Enable) {
 			# Disable NetBIOS on active interfaces
 			(Get-NetAdapter -Physical | Where-Object {$_.Name -NotLike '*Loopback*' -And $_.Status -eq 'Up'}) | ForEach-Object -Process {
@@ -287,78 +287,78 @@ function Set-SAWHFWRulesState(){
 }
 ####################
 
-# Interface Bindings
+# Interface inf_bindings
 ####################
-function Get-NetBindingsState(){
+function Get-Netinf_bindingsState(){
 	####################
-	# Check Network Adapter Bindings
+	# Check Network Adapter inf_bindings
 	####################
-	Write-Host '[*] Checking Network Adapter Bindings'
+	Write-Host '[*] Checking Network Adapter inf_bindings'
 	(Get-NetAdapter -Physical | Where-Object {$_.Name -NotLike '*Loopback*' -And $_.Status -eq 'Up'}).InterfaceAlias | ForEach-Object -Process {Get-NetAdapterBinding -InterfaceAlias $_}
 	
 	# Let's give a little whitespace for readability
 	Write-Host ''
 }
 
-function Set-NetBindingsState(){
+function Set-Netinf_bindingsState(){
 	
 	Param(
 		# Enable means to change the setting to the default / insecure state.
 		$Enable = $false
 	)
 
-	if ($bindings){
+	if ($inf_bindings){
 		if (-NOT $Enable) { 
-			# Disable selected bindings
+			# Disable selected inf_bindings
 			(Get-NetAdapter -Physical | Where-Object {$_.Name -NotLike '*Loopback*' -And $_.Status -eq 'Up'}).InterfaceAlias | ForEach-Object -Process {
-				if ($ipv6) {
+				if ($inf_bindings_ipv6) {
 					# Disable IPv6
 					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_tcpip6			 
 				}
-				if ($lltp) {  
+				if ($inf_bindings_lltp) {  
 					# Disable Link-Layer Topology Discovery Mapper I/O Driver
 					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_lltdio 
 					# Disable Microsoft LLDP protocol Driver
 					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_lldp 
 				}
-				if ($client) { 
+				if ($inf_bindings_client) { 
 					# Disable Client for Microsoft Networks
 					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_msclient 
 					# Disable File and Printer Sharing for Microsoft Networks
 					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_server 
 				}
-				if ($namp) { 
+				if ($inf_bindings_namp) { 
 					# Disable Microsoft Network Adapter Multiplexor Protocol
 					Disable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_implat 
 				}
 			}
 		}else{
-			# Enable selected bindings
+			# Enable selected inf_bindings
 			(Get-NetAdapter -Physical | Where-Object {$_.Name -NotLike '*Loopback*' -And $_.Status -eq 'Up'}).InterfaceAlias | ForEach-Object -Process {
-				if ($ipv6) {
+				if ($inf_bindings_ipv6) {
 					# Disable IPv6
 					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_tcpip6			 
 				}
-				if ($lltp) {  
+				if ($inf_bindings_lltp) {  
 					# Disable Link-Layer Topology Discovery Mapper I/O Driver
 					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_lltdio 
 					# Disable Microsoft LLDP protocol Driver
 					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_lldp 
 				}
-				if ($client) { 
+				if ($inf_bindings_client) { 
 					# Disable Client for Microsoft Networks
 					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_msclient 
 					# Disable File and Printer Sharing for Microsoft Networks
 					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_server 
 				}
-				if ($namp) { 
+				if ($inf_bindings_namp) { 
 					# Disable Microsoft Network Adapter Multiplexor Protocol
 					Enable-NetAdapterBinding -InterfaceAlias $_ -ComponentID ms_implat 
 				}
 			}
 		}
 	}else{
-		Write-Host '[!] Modification of interface bindings is disabled.'
+		Write-Host '[!] Modification of interface inf_bindings is disabled.'
 	}	
 	
 	# Let's give a little whitespace for readability
@@ -406,12 +406,12 @@ function Set-TerminalServicesState(){
 		$Enable = $false
 	)
 
-	if ($rdp){
-		$rdp_setting = Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections"
+	if ($disable_rdp){
+		$disable_rdp_setting = Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections"
 		$check_rdp_fw_rule = Get-NetFirewallRule -DisplayName "Block RDP - SAWH" -ErrorAction SilentlyContinue
 		if (-NOT $Enable) { 
 			# Disable RDP in registry
-			if ($rdp_setting.fDenyTSConnections){
+			if ($disable_rdp_setting.fDenyTSConnections){
 				Write-Host '[*] RDP was already disabled'
 			}else{
 				Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 1
@@ -431,7 +431,7 @@ function Set-TerminalServicesState(){
 			}
 		}else{
 			# Enable RDP in registry
-			if ($rdp_setting.fDenyTSConnections){
+			if ($disable_rdp_setting.fDenyTSConnections){
 				Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
 				Write-Host '[*] RDP was enabled'
 			}else{
@@ -483,7 +483,7 @@ function Set-SMBConfigState(){
 	####################
 	# Disable SMBv1 - This should be last because of reboot prompt
 	####################
-	if ($smb_hard){
+	if ($harden_smb){
 		if (-NOT $Enable) { 
 			Write-Host '[*] Hardening SMB configuration settings.'
 			Set-SmbServerConfiguration -AutoShareServer $false -AutoShareWorkstation $false -RequireSecuritySignature $true -EnableSecuritySignature $true -EncryptData $true -Confirm:$false
@@ -522,7 +522,7 @@ function Set-SMBv1State(){
 	####################
 	# Disable SMBv1 - This should be last because of reboot prompt
 	####################
-	if ($smbv1){
+	if ($disable_smbv1){
 		$smb_state = (Get-WindowsOptionalFeature -Online -FeatureName smb1protocol).State
 		if (-NOT $Enable) { 
 			if ($smb_state -eq 'Enabled'){
@@ -575,17 +575,17 @@ function Write-SAWHConfig {
 	Write-Host "[*] SAWH Configuration Settings"
 	Write-Host "################################"
 	Write-Host "[*] Running on Windows: $sysversion"
-	Write-Host "[*] Modifying network interface mode is set to: $inf_mode"
-	Write-Host "[*] Modifying NetBIOS is set to: $netbios"
+	Write-Host "[*] Modifying network interface mode is set to: $inf_private_mode"
+	Write-Host "[*] Modifying NetBIOS is set to: $disable_netbios"
 	Write-Host "[*] Modifying Firewall Rules is set to: $fw_rules"
-	Write-Host "[*] Modifying Network Adapter Bindings is set to: $bindings"
-	Write-Host "    [*] Modifying Network Adapter IPv6 Binding is set to: $ipv6"
-	Write-Host "    [*] Modifying Network Adapter LLTP Bindings is set to: $lltp"
-	Write-Host "    [*] Modifying Network Adapter Client / Server Bindings is set to: $client"
-	Write-Host "    [*] Modifying Network Adapter Multiplexor Binding is set to: $namp"
-	Write-Host "[*] Modifying Terminal Services (RDP) is set to: $rdp"
-	Write-Host "[*] Modifying SMB Configuration is set to: $smb_hard"
-	Write-Host "[*] Modifying SMBv1 is set to: $smbv1"
+	Write-Host "[*] Modifying Network Adapter inf_bindings is set to: $inf_bindings"
+	Write-Host "    [*] Modifying Network Adapter IPv6 Binding is set to: $inf_bindings_ipv6"
+	Write-Host "    [*] Modifying Network Adapter LLTP inf_bindings is set to: $inf_bindings_lltp"
+	Write-Host "    [*] Modifying Network Adapter Client / Server inf_bindings is set to: $inf_bindings_client"
+	Write-Host "    [*] Modifying Network Adapter Multiplexor Binding is set to: $inf_bindings_namp"
+	Write-Host "[*] Modifying Terminal Services (RDP) is set to: $disable_rdp"
+	Write-Host "[*] Modifying SMB Configuration is set to: $harden_smb"
+	Write-Host "[*] Modifying SMBv1 is set to: $disable_smbv1"
 	Write-Host "################################"
 	Write-Host ""
 }
@@ -597,7 +597,7 @@ function Write-SystemState {
 	Get-InterfaceModeState
 	Get-NetBIOSState
 	Get-SAWHFWRulesState
-	Get-NetBindingsState
+	Get-Netinf_bindingsState
 	Get-TerminalServicesState
 	Get-SMBConfigState
 	Get-SMBv1State
@@ -653,7 +653,7 @@ if ($disable){
 	Set-InterfaceModeState
 	Set-NetBIOSState
 	Set-SAWHFWRulesState
-	Set-NetBindingsState
+	Set-Netinf_bindingsState
 	Set-TerminalServicesState
 	Set-SMBConfigState
 	Set-SMBv1State
@@ -669,7 +669,7 @@ if ($rollback){
 	Set-InterfaceModeState -Enable $true
 	Set-NetBIOSState -Enable $true
 	Set-SAWHFWRulesState -Enable $true
-	Set-NetBindingsState -Enable $true
+	Set-Netinf_bindingsState -Enable $true
 	Set-TerminalServicesState -Enable $true
 	Set-SMBConfigState -Enable $true 
 	Set-SMBv1State -Enable $true
