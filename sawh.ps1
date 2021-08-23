@@ -289,7 +289,7 @@ function Set-SAWHFWRulesState(){
 
 # Interface inf_bindings
 ####################
-function Get-Netinf_bindingsState(){
+function Get-NetInfBindingsState(){
 	####################
 	# Check Network Adapter inf_bindings
 	####################
@@ -300,7 +300,7 @@ function Get-Netinf_bindingsState(){
 	Write-Host ''
 }
 
-function Set-Netinf_bindingsState(){
+function Set-NetInfBindingsState(){
 	
 	Param(
 		# Enable means to change the setting to the default / insecure state.
@@ -597,7 +597,7 @@ function Write-SystemState {
 	Get-InterfaceModeState
 	Get-NetBIOSState
 	Get-SAWHFWRulesState
-	Get-Netinf_bindingsState
+	Get-NetInfBindingsState
 	Get-TerminalServicesState
 	Get-SMBConfigState
 	Get-SMBv1State
@@ -653,7 +653,7 @@ if ($disable){
 	Set-InterfaceModeState
 	Set-NetBIOSState
 	Set-SAWHFWRulesState
-	Set-Netinf_bindingsState
+	Set-NetInfBindingsState
 	Set-TerminalServicesState
 	Set-SMBConfigState
 	Set-SMBv1State
@@ -669,7 +669,7 @@ if ($rollback){
 	Set-InterfaceModeState -Enable $true
 	Set-NetBIOSState -Enable $true
 	Set-SAWHFWRulesState -Enable $true
-	Set-Netinf_bindingsState -Enable $true
+	Set-NetInfBindingsState -Enable $true
 	Set-TerminalServicesState -Enable $true
 	Set-SMBConfigState -Enable $true 
 	Set-SMBv1State -Enable $true
