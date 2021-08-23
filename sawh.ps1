@@ -62,7 +62,7 @@ $start_state     = $true       # Enable / disable writing the system's state bef
 $completed_state = $true       # Enable / disable writing the system's state after changes
 
 # Global Configuration verbs, modify these to disable modifications
-$inf_private_mode = $true # Network interfaces mode - true: Public' mode, false: 'Private' mode
+$inf_private_mode = $true # Network interfaces mode - true: 'Private' mode, false: 'Public' mode
 $disable_netbios  = $true # Disable NetBIOS for all network interfaces
 $fw_rules         = $true # Apply SAWH firewall rules
 $inf_bindings     = $true # Change configuration of network interfaces 
