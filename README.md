@@ -33,6 +33,7 @@ The following configurations can be updated within the script. Your team should 
 * <ins>SMB Configuration</ins>: This setting controls the configuration settings for SMB. Disabling will turn off SMB server and Workstation shares and will turn on and require SMB signing and encryption. Rolling back will reset the system to normal SMB default configuration which is to turn on SMB server and Workstation shares and disable SMB signing and encryption.
 * <ins>SMBv1</ins>: This setting controls the use of SMBv1. Disabling will disable SMBv1 on the system. ***Rolling back does nothing.*** You don't need SMBv1 for a stand-alone system. Don't enable it. Fire your vendor or integrator if they force you to enable it. If you really need it, you'll figure out how to enable it.
   * Seriously, you don't need SMBv1. Disabling it is extremely important.
+* <ins>Default Windows Apps</ins>: By default Windows 10 installs tens of additional applications not needed for ICS environment on the first user log in, such as BingWeather or XboxGameOverlay.  Some of them are described on the [Mircrosoft website](https://docs.microsoft.com/en-us/windows/application-management/apps-in-windows-10). Disabling will uninstall most of the default Windows Apps. Rolling back will install them again (without recreating menu start tiles and windows bar shortcuts). The apps list can be modified per needs in the code.
 
 ## Considerations
 Check is safe. It makes no changes and there is a separate confirmation prompt when changes will be made to the system.
